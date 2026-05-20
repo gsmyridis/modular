@@ -565,6 +565,17 @@ def test_floor_codepoint_boundary() raises:
     for i in range(2, 4):
         assert_equal(one.floor_codepoint_boundary(i), 2)
 
+    # 2-byte codepoints
+    var two = StringSlice("γσ")
+    for i in range(2):
+        assert_equal(two.floor_codepoint_boundary(i), 0)
+
+    for i in range(2, 4):
+        assert_equal(two.floor_codepoint_boundary(i), 2)
+
+    for i in range(4, 8):
+        assert_equal(two.floor_codepoint_boundary(i), 4)
+
     # 3-byte codepoints
     var three = StringSlice("日本")
     for i in range(0, 3):
@@ -586,6 +597,50 @@ def test_floor_codepoint_boundary() raises:
 
     for i in range(8, 10):
         assert_equal(four.floor_codepoint_boundary(i), 8)
+
+
+def test_ceil_codepoint_boundary() raises:
+    # Empty
+    var empty = StringSlice("")
+    for i in [0, 1, Int.MAX]:
+        assert_equal(empty.ceil_codepoint_boundary(i), 0)
+
+    # 1-byte codepoints
+    var one = StringSlice("gs")
+    assert_equal(one.ceil_codepoint_boundary(0), 0)
+    assert_equal(one.ceil_codepoint_boundary(1), 1)
+    for i in range(2, 4):
+        assert_equal(one.ceil_codepoint_boundary(i), 2)
+
+    # 2-byte codepoints
+    var two = StringSlice("γσ")
+    assert_equal(two.ceil_codepoint_boundary(0), 0)
+
+    for i in range(1, 3):
+        assert_equal(two.ceil_codepoint_boundary(i), 2)
+
+    for i in range(3, 7):
+        assert_equal(two.ceil_codepoint_boundary(i), 4)
+
+    # 3-byte codepoints
+    var three = StringSlice("日本")
+    assert_equal(three.ceil_codepoint_boundary(0), 0)
+
+    for i in range(1, 4):
+        assert_equal(three.ceil_codepoint_boundary(i), 3)
+
+    for i in range(4, 10):
+        assert_equal(three.ceil_codepoint_boundary(i), 6)
+
+    # # 4-byte codepoints
+    var four = StringSlice("🇬🇷")
+    assert_equal(four.ceil_codepoint_boundary(0), 0)
+
+    for i in range(1, 5):
+        assert_equal(four.ceil_codepoint_boundary(i), 4)
+
+    for i in range(5, 13):
+        assert_equal(four.ceil_codepoint_boundary(i), 8)
 
 
 def test_comparison_operators() raises:

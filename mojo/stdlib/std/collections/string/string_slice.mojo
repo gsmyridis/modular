@@ -1713,8 +1713,8 @@ struct StringSlice[mut: Bool, //, origin: Origin[mut=mut]](
 
     def floor_codepoint_boundary(self, index: Int) -> Int:
         """
-        Finds the closest byte index `i` not exceeding the specified `index`
-        where `is_codepoint_boundary(x)` is `True`.
+        Finds the closest byte index `i` not exceeding the specified `index`where
+        `is_codepoint_boundary(i)` is `True`.
 
         This method can help you truncate a string so that it's still valid UTF-8,
         but doesn't exceed a given number of bytes. Note that this is done purely
@@ -1727,7 +1727,8 @@ struct StringSlice[mut: Bool, //, origin: Origin[mut=mut]](
             index: Byte index that must not be exceeded.
 
         Returns:
-            The closest byte index `i` not exceeding `index` that is a codepoint boundary.
+            The closest byte index `i` not exceeding `index` that is a codepoint
+            boundary.
         """
         if index >= self.byte_length():
             return self.byte_length()
@@ -1742,6 +1743,41 @@ struct StringSlice[mut: Bool, //, origin: Origin[mut=mut]](
         debug_assert(
             i >= index - 3,
             "The codepoint will be within 4 bytes from the index",
+        )
+        return i
+
+    def ceil_codepoint_boundary(self, index: Int) -> Int:
+        """
+        Finds the closest byte index `i` not below the specified `index` where
+        `is_codepoint_boundary(i)` is `true`.
+
+        If `index` is greater than the byte length of the string slice, this returns
+        the byte length of the slice.
+
+        This method is the natural complement to [`floor_char_boundary`]. See that
+        method for more details.
+
+        Args:
+            index: Byte index it cannot go below from.
+
+        Returns:
+            The closest byte index `i` that is not below `index` that is a codepoint
+            boundary.
+
+        """
+        if index >= self.byte_length():
+            return self.byte_length()
+
+        var i = index
+        while i < self.byte_length():
+            if self.is_codepoint_boundary(UInt(i)):
+                break
+
+            i += 1
+
+        debug_assert(
+            i <= index + 3,
+            "The boundary will be within four bytes from the index.",
         )
         return i
 
