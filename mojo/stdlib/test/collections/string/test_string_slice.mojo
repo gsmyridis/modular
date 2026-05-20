@@ -552,6 +552,42 @@ def test_is_codepoint_boundary() raises:
     assert_false(empty.is_codepoint_boundary(1))
 
 
+def test_floor_codepoint_boundary() raises:
+    # Empty
+    var empty = StringSlice("")
+    for i in [0, 1, Int.MAX]:
+        assert_equal(empty.floor_codepoint_boundary(i), 0)
+
+    # 1-byte codepoints
+    var one = StringSlice("gs")
+    assert_equal(one.floor_codepoint_boundary(0), 0)
+    assert_equal(one.floor_codepoint_boundary(1), 1)
+    for i in range(2, 4):
+        assert_equal(one.floor_codepoint_boundary(i), 2)
+
+    # 3-byte codepoints
+    var three = StringSlice("日本")
+    for i in range(0, 3):
+        assert_equal(three.floor_codepoint_boundary(i), 0)
+
+    for i in range(3, 6):
+        assert_equal(three.floor_codepoint_boundary(i), 3)
+
+    for i in range(6, 8):
+        assert_equal(three.floor_codepoint_boundary(i), 6)
+
+    # 4-byte codepoints
+    var four = StringSlice("🇬🇷")
+    for i in range(4):
+        assert_equal(four.floor_codepoint_boundary(i), 0)
+
+    for i in range(4, 8):
+        assert_equal(four.floor_codepoint_boundary(i), 4)
+
+    for i in range(8, 10):
+        assert_equal(four.floor_codepoint_boundary(i), 8)
+
+
 def test_comparison_operators() raises:
     var abc = StringSlice("abc")
     var de = StringSlice("de")

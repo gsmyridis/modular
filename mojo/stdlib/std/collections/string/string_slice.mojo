@@ -1711,6 +1711,40 @@ struct StringSlice[mut: Bool, //, origin: Origin[mut=mut]](
         # If this is not a continuation byte, then it must be a start byte.
         return not _is_utf8_continuation_byte(byte)
 
+    def floor_codepoint_boundary(self, index: Int) -> Int:
+        """
+        Finds the closest byte index `i` not exceeding the specified `index`
+        where `is_codepoint_boundary(x)` is `True`.
+
+        This method can help you truncate a string so that it's still valid UTF-8,
+        but doesn't exceed a given number of bytes. Note that this is done purely
+        at the codepoint level and can still visually split graphemes.
+
+        For example, the emoji 🧑‍🔬 (scientist) could be split so that the string only
+        includes 🧑 (person) instead.
+
+        Args:
+            index: Byte index that must not be exceeded.
+
+        Returns:
+            The closest byte index `i` not exceeding `index` that is a codepoint boundary.
+        """
+        if index >= self.byte_length():
+            return self.byte_length()
+
+        var i = index
+        while i > 0:
+            if self.is_codepoint_boundary(UInt(i)):
+                break
+
+            i -= 1
+
+        debug_assert(
+            i >= index - 3,
+            "The codepoint will be within 4 bytes from the index",
+        )
+        return i
+
     def startswith(
         self, prefix: StringSlice, start: Int = 0, end: Int = -1
     ) -> Bool:
