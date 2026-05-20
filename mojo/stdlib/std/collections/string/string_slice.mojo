@@ -1712,9 +1712,11 @@ struct StringSlice[mut: Bool, //, origin: Origin[mut=mut]](
         return not _is_utf8_continuation_byte(byte)
 
     def floor_codepoint_boundary(self, index: Int) -> Int:
-        """
-        Finds the closest byte index `i` not exceeding the specified `index`where
-        `is_codepoint_boundary(i)` is `True`.
+        """Returns the greatest codepoint boundary not exceeding `index`.
+
+        If `index` falls in the middle of a multi-byte UTF-8 codepoint, this returns
+        the byte index at the start of that codepoint. If `index` is greater than or
+        equal to the byte length of the string slice, it returns the byte length.
 
         This method can help you truncate a string so that it's still valid UTF-8,
         but doesn't exceed a given number of bytes. Note that this is done purely
@@ -1724,11 +1726,11 @@ struct StringSlice[mut: Bool, //, origin: Origin[mut=mut]](
         includes 🧑 (person) instead.
 
         Args:
-            index: Byte index that must not be exceeded.
+            index: The byte index that must not be exceeded.
 
         Returns:
-            The closest byte index `i` not exceeding `index` that is a codepoint
-            boundary.
+            The greatest byte index `i <= index` where `is_codepoint_boundary(i)`
+            is `True`.
         """
         if index >= self.byte_length():
             return self.byte_length()
@@ -1747,23 +1749,20 @@ struct StringSlice[mut: Bool, //, origin: Origin[mut=mut]](
         return i
 
     def ceil_codepoint_boundary(self, index: Int) -> Int:
-        """
-        Finds the closest byte index `i` not below the specified `index` where
-        `is_codepoint_boundary(i)` is `true`.
+        """Returns the smallest codepoint boundary not below `index`.
 
-        If `index` is greater than the byte length of the string slice, this returns
-        the byte length of the slice.
+        If `index` falls in the middle of a multi-byte UTF-8 codepoint, this returns
+        the byte index immediately after that codepoint. If `index` is greater than
+        or equal to the byte length of the string slice, it returns the byte length.
 
-        This method is the natural complement to [`floor_char_boundary`]. See that
-        method for more details.
+        This method is the complement of `floor_codepoint_boundary`.
 
         Args:
-            index: Byte index it cannot go below from.
+            index: The byte index that the returned boundary must no be below.
 
         Returns:
-            The closest byte index `i` that is not below `index` that is a codepoint
-            boundary.
-
+            The smallest byte index `i >= index` where `is_codepoint_boundary(i)` is
+            `True`.
         """
         if index >= self.byte_length():
             return self.byte_length()
