@@ -556,7 +556,7 @@ def test_floor_codepoint_boundary() raises:
     # Empty
     var empty = StringSlice("")
     for i in [0, 1, Int.MAX]:
-        assert_equal(empty.floor_codepoint_boundary(i), 0)
+        assert_equal(empty.floor_codepoint_boundary(UInt(i)), 0)
 
     # 1-byte codepoints
     var one = StringSlice("gs")
