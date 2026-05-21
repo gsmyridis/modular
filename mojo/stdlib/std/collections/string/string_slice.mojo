@@ -1711,7 +1711,7 @@ struct StringSlice[mut: Bool, //, origin: Origin[mut=mut]](
         # If this is not a continuation byte, then it must be a start byte.
         return not _is_utf8_continuation_byte(byte)
 
-    def floor_codepoint_boundary(self, index: Int) -> Int:
+    def floor_codepoint_boundary(self, index: UInt) -> Int:
         """Returns the greatest codepoint boundary not exceeding `index`.
 
         If `index` falls in the middle of a multi-byte UTF-8 codepoint, this returns
@@ -1732,10 +1732,10 @@ struct StringSlice[mut: Bool, //, origin: Origin[mut=mut]](
             The greatest byte index `i <= index` where `is_codepoint_boundary(i)`
             is `True`.
         """
-        if index >= self.byte_length():
+        if Int(index) >= self.byte_length():
             return self.byte_length()
 
-        var i = index
+        var i = Int(index)
         while i > 0:
             if self.is_codepoint_boundary(UInt(i)):
                 break
@@ -1743,12 +1743,12 @@ struct StringSlice[mut: Bool, //, origin: Origin[mut=mut]](
             i -= 1
 
         debug_assert(
-            i >= index - 3,
+            i >= Int(index) - 3,
             "The codepoint will be within 4 bytes from the index",
         )
         return i
 
-    def ceil_codepoint_boundary(self, index: Int) -> Int:
+    def ceil_codepoint_boundary(self, index: UInt) -> Int:
         """Returns the smallest codepoint boundary not below `index`.
 
         If `index` falls in the middle of a multi-byte UTF-8 codepoint, this returns
@@ -1764,10 +1764,10 @@ struct StringSlice[mut: Bool, //, origin: Origin[mut=mut]](
             The smallest byte index `i >= index` where `is_codepoint_boundary(i)` is
             `True`.
         """
-        if index >= self.byte_length():
+        if Int(index) >= self.byte_length():
             return self.byte_length()
 
-        var i = index
+        var i = Int(index)
         while i < self.byte_length():
             if self.is_codepoint_boundary(UInt(i)):
                 break
@@ -1775,7 +1775,7 @@ struct StringSlice[mut: Bool, //, origin: Origin[mut=mut]](
             i += 1
 
         debug_assert(
-            i <= index + 3,
+            i <= Int(index) + 3,
             "The boundary will be within four bytes from the index.",
         )
         return i
