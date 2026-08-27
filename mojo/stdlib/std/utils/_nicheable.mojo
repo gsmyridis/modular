@@ -14,6 +14,7 @@
 from std.memory import MaybeUninit
 
 
+@fieldwise_init
 struct NicheIndex(Equatable, TrivialRegisterPassable):
     """The result of `UnsafeNicheable.classify_niche`.
 
@@ -27,16 +28,6 @@ struct NicheIndex(Equatable, TrivialRegisterPassable):
     """
 
     var _index: Int
-
-    @always_inline
-    def __init__(out self, index: Int):
-        """Construct a `NicheIndex` with the given index value. Must be in the
-        range (`0` <= index <= `Int.MAX`).
-
-        Args:
-            index: The niche index value.
-        """
-        self._index = index
 
     @always_inline
     def __eq__(self, other: Self) -> Bool:
