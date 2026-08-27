@@ -137,6 +137,7 @@ struct TraceCategory(Equatable, Intable, TrivialRegisterPassable):
 # ===-----------------------------------------------------------------------===#
 
 
+@fieldwise_init
 struct TraceLevel(Comparable, TrivialRegisterPassable):
     """An enum-like struct specifying the level of tracing to perform."""
 
@@ -155,27 +156,6 @@ struct TraceLevel(Comparable, TrivialRegisterPassable):
     - 1 (OP): Operation-level tracing
     - 2 (THREAD): Thread-level tracing
     """
-
-    @always_inline
-    def __init__(out self, value: Int):
-        """Initializes a TraceLevel with the given integer value.
-
-        Args:
-            value: The integer value for the trace level.
-        """
-        self.value = value
-
-    @always_inline("nodebug")
-    def __eq__(self, rhs: Self) -> Bool:
-        """Compares for equality.
-
-        Args:
-            rhs: The value to compare.
-
-        Returns:
-            True if they are equal.
-        """
-        return self.value == rhs.value
 
     @always_inline("nodebug")
     def __lt__(self, rhs: Self) -> Bool:
